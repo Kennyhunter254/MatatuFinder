@@ -1,0 +1,59 @@
+{
+    "routes": [
+      {
+        "id": 1,
+        "name": "Route 1",
+        "stops": ["Stop 1", "Stop 2", "Stop 3"],
+        "schedule": "Every 30 minutes"
+      },
+      {
+        "id": 2,
+        "name": "Route 2",
+        "stops": ["Stop A", "Stop B"],
+        "schedule": "Every 45 minutes"
+      }
+    ],
+    "seatAvailability": [
+      {
+        "id": 1,
+        "routeId": 1,
+        "seatsAvailable": 10
+      },
+      {
+        "id": 2,
+        "routeId": 2,
+        "seatsAvailable": 5
+      }
+    ],
+    "bookingAlerts": [
+      {
+        "id": 1,
+        "userId": 1,
+        "routeId": 1,
+        "alertMessage": "Matatu on Route 1 is available with 10 seats."
+      },
+      {
+        "id": 2,
+        "userId": 2,
+        "routeId": 2,
+        "alertMessage": "Matatu on Route 2 is available with 5 seats."
+      }
+    ],
+    "userFeedback": [
+      {
+        "id": 1,
+        "userId": 1,
+        "routeId": 1,
+        "rating": 4,
+        "comment": "Clean and punctual."
+      },
+      {
+        "id": 2,
+        "userId": 2,
+        "routeId": 2,
+        "rating": 3,
+        "comment": "Could be cleaner."
+      }
+    ]
+  }
+  

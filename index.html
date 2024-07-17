@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MatatuFinder</title>
+    <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+    <header>
+        <h1>MatatuFinder</h1>
+    </header>
+    <main>
+        <!-- Route Information -->
+        <section id="route-information">
+            <h2>Route Information</h2>
+            <form id="route-form">
+                <input type="text" id="route-name" placeholder="Route Name" required>
+                <input type="text" id="route-stops" placeholder="Stops (comma separated)" required>
+                <input type="text" id="route-schedule" placeholder="Schedule" required>
+                <button type="submit">Add Route</button>
+            </form>
+            <div id="routes"></div>
+        </section>
+        
+        <!-- Seat Availability -->
+        <section id="seat-availability">
+            <h2>Seat Availability</h2>
+            <form id="seat-form">
+                <input type="text" id="seat-route" placeholder="Route" required>
+                <input type="number" id="seat-available" placeholder="Available Seats" required>
+                <button type="submit">Add Seat Availability</button>
+            </form>
+            <div id="seats"></div>
+        </section>
+        
+        <!-- Booking Alerts -->
+        <section id="booking-alerts">
+            <h2>Booking Alerts</h2>
+            <form id="alert-form">
+                <input type="text" id="alert-route" placeholder="Route" required>
+                <input type="text" id="alert-notification" placeholder="Notification" required>
+                <button type="submit">Add Booking Alert</button>
+            </form>
+            <div id="alerts"></div>
+        </section>
+        
+        <!-- User Feedback -->
+        <section id="user-feedback">
+            <h2>User Feedback</h2>
+            <form id="feedback-form">
+                <input type="text" id="feedback-operator" placeholder="Operator" required>
+                <textarea id="feedback-review" placeholder="Review" required></textarea>
+                <button type="submit">Submit Feedback</button>
+            </form>
+            <div id="feedbacks"></div>
+        </section>
+    </main>
+    <script src="scripts/main.js"></script>
+</body>
+</html>
