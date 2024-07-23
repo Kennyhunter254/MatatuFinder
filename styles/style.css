@@ -3,7 +3,7 @@ body {
     margin: 0;
     padding: 0;
     background-color: #f4f4f4;
-    background-image: url('/https://tapinto-production.s3.amazonaws.com/uploads/articles/im/best_crop_d55eacbbd1bbc915692d_IMG_0566_2.JPG?id=4907592') !important;
+    background-image: url() !important;
     background-size: cover !important;
     background-position: center !important;
     background-repeat: no-repeat !important;
@@ -239,4 +239,8 @@ footer p {
     margin-bottom: 10px;
     padding: 10px;
     border-radius: 4px;
+}
+
+.hidden {
+    display: none;
 }

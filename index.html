@@ -5,17 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Matatu Finder</title>
     <link rel="stylesheet" href="styles/style.css">
-    <style>
-        .hidden {
-            display: none;
-        }
-    </style>
 </head>
 <body>
-    
     <header>
         <div class="logo-container">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwRVg-4AimZb2BLfK0u19WnVXw3pSiQPpuTQ&s" alt="" class="logo">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwRVg-4AimZb2BLfK0u19WnVXw3pSiQPpuTQ&s" alt="Logo" class="logo">
             <span class="logo-text">Dynamic Booking Website<br><small>Service Beyond Imagination</small></span>
         </div>
         <nav>
@@ -28,10 +22,31 @@
         </nav>
     </header>
     <main>
+        <div id="booking-confirmation" class="hidden">
+            <p id="confirmation-message"></p>
+            <button type="button" id="close-confirmation-btn">Close</button>
+        </div>
+        
+        
         <div id="home-section">
             <div id="route-info-container"></div>
             <div id="seat-availability-container"></div>
             <div id="booking-alerts-container"></div>
+            <div id="create-route-section">
+                <h2>Create New Route</h2>
+                <form id="create-route-form">
+                    <label for="route-name">Route Name:</label>
+                    <input type="text" id="route-name" name="route-name" required>
+                    
+                    <label for="route-stops">Route Stops (comma-separated):</label>
+                    <input type="text" id="route-stops" name="route-stops" required>
+                    
+                    <label for="route-schedule">Route Schedule:</label>
+                    <input type="text" id="route-schedule" name="route-schedule" required>
+                    
+                    <button type="submit">Create Route</button>
+                </form>
+            </div>
             
             <div id="booking-form-container">
                 <h2>Book a Matatu</h2>
@@ -91,43 +106,39 @@
         </div>
 
         <div id="services-section" class="hidden">
-            <div id="services-section">
-                <h1>Our Services</h1>
-                <p>At Dynamic Booking Website, we offer a range of services designed to make your travel experience seamless and enjoyable. Here’s what you can expect:</p>
-            
-                <h2>Service Overview</h2>
-                <p>Our platform provides efficient matatu booking solutions with a focus on convenience and customer satisfaction. Whether you’re planning a short trip or a long journey, we have the right options for you.</p>
-            
-                <h2>Booking Options</h2>
-                <ul>
-                    <li><strong>One-Way Bookings:</strong> Choose your route and book a single journey.</li>
-                    <li><strong>Round-Trip Bookings:</strong> Book a return journey with ease.</li>
-                    <li><strong>Group Bookings:</strong> Arrange travel for larger groups with special rates through making inquiries via.</li>
-                </ul>
-            
-                <h2>Payment Methods</h2>
-                <p>We accept a variety of payment methods to make your booking process smooth:</p>
-                <ul>
-                    <li>Credit/Debit Cards</li>
-                    <li>Cash</li>
-                    <li>Bank Transfers</li>
-                </ul>
-            
-                <h2>Customer Support</h2>
-                <p>Our dedicated support team is available 24/7 to assist you with any inquiries or issues:</p>
-                <ul>
-                    <li>Live Chat Support</li>
-                    <li>Phone Support</li>
-                    <li>Email Support</li>
-                </ul>
-            
-                <h2>Special Features</h2>
-                <ul>
-                    
-                    <li><strong>Discounts and Promotions:</strong> Enjoy special offers.</li>
-                    
-            </div>
-            
+            <h1>Our Services</h1>
+            <p>At Dynamic Booking Website, we offer a range of services designed to make your travel experience seamless and enjoyable. Here’s what you can expect:</p>
+        
+            <h2>Service Overview</h2>
+            <p>Our platform provides efficient matatu booking solutions with a focus on convenience and customer satisfaction. Whether you’re planning a short trip or a long journey, we have the right options for you.</p>
+        
+            <h2>Booking Options</h2>
+            <ul>
+                <li><strong>One-Way Bookings:</strong> Choose your route and book a single journey.</li>
+                <li><strong>Round-Trip Bookings:</strong> Book a return journey with ease.</li>
+                <li><strong>Group Bookings:</strong> Arrange travel for larger groups with special rates through making inquiries via.</li>
+            </ul>
+        
+            <h2>Payment Methods</h2>
+            <p>We accept a variety of payment methods to make your booking process smooth:</p>
+            <ul>
+                <li>Credit/Debit Cards</li>
+                <li>Cash</li>
+                <li>Bank Transfers</li>
+            </ul>
+        
+            <h2>Customer Support</h2>
+            <p>Our dedicated support team is available 24/7 to assist you with any inquiries or issues:</p>
+            <ul>
+                <li>Live Chat Support</li>
+                <li>Phone Support</li>
+                <li>Email Support</li>
+            </ul>
+        
+            <h2>Special Features</h2>
+            <ul>
+                <li><strong>Discounts and Promotions:</strong> Enjoy special offers.</li>
+            </ul>
         </div>
     </main>
     <footer>

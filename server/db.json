@@ -1,58 +1,151 @@
 {
   "routes": [
-      {
-          "id": 1,
-          "name": "Route 1",
-          "stops": ["Stop 1", "Stop 2", "Stop 3"],
-          "schedule": "Every 30 minutes"
-      },
-      {
-          "id": 2,
-          "name": "Route 2",
-          "stops": ["Stop A", "Stop B"],
-          "schedule": "Every 45 minutes"
-      }
+    {
+      "name": "Route 1",
+      "stops": [
+        "Stop 1",
+        "Stop 2",
+        "Stop 3"
+      ],
+      "schedule": "Every 31 minutes",
+      "id": "1"
+    },
+    {
+      "id": "2",
+      "name": "Route 2",
+      "stops": [
+        "Stop A",
+        "Stop B"
+      ],
+      "schedule": "Every 45 minutes"
+    },
+    {
+      "id": "e5c3",
+      "name": "4",
+      "stops": [
+        "Stop 4"
+      ],
+      "schedule": "Every 50 minutes"
+    }
   ],
   "seatAvailability": [
-      {
-          "id": 1,
-          "routeId": 1,
-          "seatsAvailable": 10
-      },
-      {
-          "id": 2,
-          "routeId": 2,
-          "seatsAvailable": 5
-      }
+    {
+      "id": "1",
+      "routeId": 1,
+      "seatsAvailable": 10
+    },
+    {
+      "id": "2",
+      "routeId": 2,
+      "seatsAvailable": 5
+    }
   ],
   "bookingAlerts": [
-      {
-          "id": 1,
-          "userId": 1,
-          "routeId": 1,
-          "alertMessage": "Matatu on Route 1 is available with 10 seats."
-      },
-      {
-          "id": 2,
-          "userId": 2,
-          "routeId": 2,
-          "alertMessage": "Matatu on Route 2 is available with 5 seats."
-      }
+    {
+      "id": "1",
+      "userId": 1,
+      "routeId": 1,
+      "alertMessage": "Matatu on Route 1 is available with 10 seats."
+    },
+    {
+      "id": "2",
+      "userId": 2,
+      "routeId": 2,
+      "alertMessage": "Matatu on Route 2 is available with 5 seats."
+    },
+    {
+      "id": "0549",
+      "routeId": 1,
+      "name": "Kevin",
+      "email": "kevin@gmail.com"
+    },
+    {
+      "id": "e535",
+      "routeId": 1,
+      "name": "Kevin",
+      "email": "kevin@gmail.com"
+    },
+    {
+      "id": "0a51",
+      "routeId": 1,
+      "name": "Kevin",
+      "email": "kevin@gmail.com"
+    },
+    {
+      "id": "33f7",
+      "routeId": 1,
+      "name": "Kevin",
+      "email": "kevin@gmail.com"
+    },
+    {
+      "id": "031d",
+      "routeId": 1,
+      "name": "Kevin",
+      "email": "kevin@gmail.com"
+    },
+    {
+      "id": "5d9b",
+      "routeId": 1,
+      "name": "Kevin",
+      "email": "kevin@gmail.com"
+    },
+    {
+      "id": "7cd5",
+      "routeId": 1,
+      "name": "Kevin",
+      "email": "kevin@gmail.com"
+    },
+    {
+      "id": "3151",
+      "routeId": 1,
+      "name": "Kevin",
+      "email": "kevin@gmail.com"
+    },
+    {
+      "id": "a793",
+      "routeId": 1,
+      "name": "Kevin",
+      "email": "kevin@gmail.com"
+    },
+    {
+      "id": "cb27",
+      "routeId": 1,
+      "name": "Kevin",
+      "email": "kevin@gmail.com"
+    },
+    {
+      "id": "7234",
+      "routeId": 1,
+      "name": "Kevin",
+      "email": "kevin@gmail.com"
+    },
+    {
+      "id": "d41b",
+      "routeId": 1,
+      "name": "Kevin",
+      "email": "kevin@gmail.com"
+    }
   ],
   "userFeedback": [
-      {
-          "id": 1,
-          "userId": 1,
-          "routeId": 1,
-          "rating": 5,
-          "comment": "Great service!"
-      },
-      {
-          "id": 2,
-          "userId": 2,
-          "routeId": 2,
-          "rating": 4,
-          "comment": "Very comfortable."
-      }
+    {
+      "id": "1",
+      "userId": 1,
+      "routeId": 1,
+      "rating": 5,
+      "comment": "Great service!"
+    },
+    {
+      "id": "2",
+      "userId": 2,
+      "routeId": 2,
+      "rating": 4,
+      "comment": "Very comfortable."
+    },
+    {
+      "id": "a152",
+      "routeId": null,
+      "rating": null,
+      "comment": null
+    }
   ]
 }

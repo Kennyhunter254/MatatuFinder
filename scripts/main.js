@@ -1,292 +1,579 @@
-document.addEventListener("DOMContentLoaded", () => {
-  
-  const routeInfoContainer = document.getElementById("route-info-container");
-  const seatAvailabilityContainer = document.getElementById("seat-availability-container");
-  const bookingAlertsContainer = document.getElementById("booking-alerts-container");
-  const userFeedbackContainer = document.getElementById("user-feedback-container");
-  const bookingForm = document.getElementById("booking-form");
-  const routeSelect = document.getElementById("route");
-  const bookingConfirmation = document.getElementById("booking-confirmation");
-  const confirmationMessage = document.getElementById("confirmation-message");
-  const closeButton = document.getElementById("close-confirmation-btn");
-
+document.addEventListener('DOMContentLoaded', () => {
   const API_URL = "http://localhost:3000";
 
-  // Feedback section elements
-  const feedbackForm = document.getElementById("feedback-form");
-  const feedbackIdInput = document.getElementById("feedback-id");
-  const feedbackTextArea = document.getElementById("feedback-text");
-  const feedbackItemsList = document.getElementById("feedback-items");
-
-  const createFeedbackBtn = document.getElementById("create-feedback-btn");
-  const editFeedbackBtn = document.getElementById("edit-feedback-btn");
-  const submitFeedbackBtn = document.getElementById("submit-feedback-btn");
-  const deleteFeedbackBtn = document.getElementById("delete-feedback-btn");
-
-  let isEditing = false;
-  let feedbackData = [];
-
-  const fetchRoutes = () => {
-      fetch(`${API_URL}/routes`)
-          .then(response => response.json())
-          .then(routes => {
-              routeInfoContainer.innerHTML = "<h2>Route Information</h2>";
-              routeSelect.innerHTML = "<option value=''>Select a route</option>";
-              routes.forEach(route => {
-                  const routeCard = document.createElement("div");
-                  routeCard.className = "card";
-                  routeCard.innerHTML = `
-                      <h3>${route.name}</h3>
-                      <p>Stops: ${route.stops.join(", ")}</p>
-                      <p>Schedule: ${route.schedule}</p>
-                  `;
-                  routeInfoContainer.appendChild(routeCard);
-
-                  const option = document.createElement("option");
-                  option.value = route.id;
-                  option.textContent = route.name;
-                  routeSelect.appendChild(option);
-              });
-          })
-          .catch(error => console.error("Error fetching routes:", error));
-  };
-
-  const fetchSeatAvailability = () => {
-      fetch(`${API_URL}/seatAvailability`)
-          .then(response => response.json())
-          .then(seats => {
-              seatAvailabilityContainer.innerHTML = "<h2>Seat Availability</h2>";
-              seats.forEach(seat => {
-                  const seatCard = document.createElement("div");
-                  seatCard.className = "card";
-                  seatCard.innerHTML = `
-                      <p>Route ID: ${seat.routeId}</p>
-                      <p>Seats Available: ${seat.seatsAvailable}</p>
-                  `;
-                  seatAvailabilityContainer.appendChild(seatCard);
-              });
-          })
-          .catch(error => console.error("Error fetching seat availability:", error));
-  };
-
-  const fetchBookingAlerts = () => {
-      fetch(`${API_URL}/bookingAlerts`)
-          .then(response => response.json())
-          .then(alerts => {
-              bookingAlertsContainer.innerHTML = "<h2>Booking Alerts</h2>";
-              alerts.forEach(alert => {
-                  const alertCard = document.createElement("div");
-                  alertCard.className = "card";
-                  alertCard.innerHTML = `
-                      <p>User ID: ${alert.userId}</p>
-                      <p>Route ID: ${alert.routeId}</p>
-                      <p>Alert: ${alert.alertMessage}</p>
-                  `;
-                  bookingAlertsContainer.appendChild(alertCard);
-              });
-          })
-          .catch(error => console.error("Error fetching booking alerts:", error));
-  };
-
-  const fetchUserFeedback = () => {
-      fetch(`${API_URL}/userFeedback`)
-          .then(response => response.json())
-          .then(feedbacks => {
-              userFeedbackContainer.innerHTML = "<h2>User Feedback</h2>";
-              feedbacks.forEach(feedback => {
-                  const feedbackCard = document.createElement("div");
-                  feedbackCard.className = "card";
-                  feedbackCard.innerHTML = `
-                      <p>User ID: ${feedback.userId}</p>
-                      <p>Route ID: ${feedback.routeId}</p>
-                      <p>Rating: ${feedback.rating}</p>
-                      <p>Comment: ${feedback.comment}</p>
-                  `;
-                  userFeedbackContainer.appendChild(feedbackCard);
-              });
-          })
-          .catch(error => console.error("Error fetching user feedback:", error));
-  };
-
-  bookingForm.addEventListener("submit", (event) => {
-      event.preventDefault();
-
-      const routeId = routeSelect.value;
-      const name = bookingForm.name.value;
-      const email = bookingForm.email.value;
-
-      if (!routeId || !name || !email) {
-          alert("Please fill in all the fields");
-          return;
-      }
-
-      fetch(`${API_URL}/seatAvailability?routeId=${routeId}`)
-          .then(response => response.json())
-          .then(seats => {
-              if (seats.length === 0 || seats[0].seatsAvailable <= 0) {
-                  alert("No seats available for the selected route");
-                  return;
-              }
-
-              const seat = seats[0];
-              seat.seatsAvailable -= 1;
-
-              fetch(`${API_URL}/seatAvailability/${seat.id}`, {
-                  method: "PUT",
-                  headers: {
-                      "Content-Type": "application/json"
-                  },
-                  body: JSON.stringify(seat)
-              })
-              .then(() => {
-                  confirmationMessage.textContent = `Booking confirmed! ${name}, you have booked a seat on Route ${routeId}.`;
-                  bookingForm.reset();
-                  bookingConfirmation.classList.remove("hidden");
-                  fetchSeatAvailability();
-              })
-              .catch(error => console.error("Error updating seat availability:", error));
-          })
-          .catch(error => console.error("Error fetching seat availability:", error));
-  });
-
-  const closeConfirmation = () => {
-      bookingConfirmation.classList.add("hidden");
-  };
-
-  
-  if (closeButton) {
-      closeButton.addEventListener("click", closeConfirmation);
-  }
-
-  // Feedback functionalities
-  const updateFeedbackList = () => {
-      feedbackItemsList.innerHTML = '';
-      feedbackData.forEach(feedback => {
-          const listItem = document.createElement('li');
-          listItem.textContent = feedback.text;
-          listItem.dataset.id = feedback.id;
-          listItem.addEventListener('click', () => {
-              feedbackIdInput.value = feedback.id;
-              feedbackTextArea.value = feedback.text;
-              isEditing = true;
-              toggleFeedbackButtons('edit');
-          });
-          feedbackItemsList.appendChild(listItem);
+  // Fetch and display routes
+  const fetchAndDisplayRoutes = () => {
+    fetch(`${API_URL}/routes`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(routes => {
+        displayRoutes(routes);
+        populateRouteDropdown(routes); 
+      })
+      .catch(error => {
+        console.error('Error fetching routes:', error);
       });
   };
 
-  const generateId = () => {
-      return '_' + Math.random().toString(36).substr(2, 9);
+  // Display routes
+  const displayRoutes = (routes) => {
+    const routeInfoContainer = document.getElementById('route-info-container');
+    routeInfoContainer.innerHTML = '';
+
+    if (routes.length === 0) {
+      routeInfoContainer.innerHTML = '<p>No routes available</p>';
+      return;
+    }
+
+    routes.forEach(route => {
+      const routeElement = document.createElement('div');
+      routeElement.classList.add('route');
+      routeElement.innerHTML = `
+        <p>Route ID: ${route.id || 'N/A'}</p>
+        <p>Name: ${route.name || 'N/A'}</p>
+        <p>Stops: ${route.stops.join(', ') || 'N/A'}</p>
+        <p>Schedule: ${route.schedule || 'N/A'}</p>
+        <button onclick="editRoute(${route.id})">Edit</button>
+        <button onclick="updateRoute(${route.id})">Update</button>
+        <button onclick="deleteRoute(${route.id})">Delete</button>
+      `;
+      routeInfoContainer.appendChild(routeElement);
+    });
   };
 
-  const toggleFeedbackButtons = (action) => {
-      switch (action) {
-          case 'create':
-              createFeedbackBtn.classList.add('hidden');
-              editFeedbackBtn.classList.remove('hidden');
-              submitFeedbackBtn.classList.remove('hidden');
-              deleteFeedbackBtn.classList.add('hidden');
-              break;
-          case 'edit':
-              createFeedbackBtn.classList.add('hidden');
-              editFeedbackBtn.classList.add('hidden');
-              submitFeedbackBtn.classList.remove('hidden');
-              deleteFeedbackBtn.classList.remove('hidden');
-              break;
-          default:
-              createFeedbackBtn.classList.remove('hidden');
-              editFeedbackBtn.classList.add('hidden');
-              submitFeedbackBtn.classList.add('hidden');
-              deleteFeedbackBtn.classList.add('hidden');
-              break;
-      }
+  // Populate route dropdown
+  const populateRouteDropdown = (routes) => {
+    const routeSelect = document.getElementById('route');
+    routeSelect.innerHTML = '<option value="">Select Route</option>'; 
+    routes.forEach(route => {
+      const option = document.createElement('option');
+      option.value = route.id;
+      option.textContent = route.name;
+      routeSelect.appendChild(option);
+    });
   };
 
-  createFeedbackBtn.addEventListener('click', () => {
-      feedbackIdInput.value = ''; // Clear feedback ID
-      feedbackTextArea.value = ''; // Clear textarea
-      toggleFeedbackButtons('create');
-  });
+  // Handle route creation
+  const createRoute = (event) => {
+    event.preventDefault();
 
-  editFeedbackBtn.addEventListener('click', () => {
-      if (feedbackIdInput.value) {
-          isEditing = true;
-          toggleFeedbackButtons('edit');
+    const formData = new FormData(event.target);
+    const newRoute = {
+      name: formData.get('route-name'),
+      stops: formData.get('route-stops').split(',').map(stop => stop.trim()), 
+      schedule: formData.get('route-schedule')
+    };
+
+    fetch(`${API_URL}/routes`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(newRoute)
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-  });
+      return response.json();
+    })
+    .then(() => {
+      fetchAndDisplayRoutes(); 
+      document.getElementById('create-route-form').reset();
+    })
+    .catch(error => {
+      console.error('Error creating route:', error);
+    });
+  };
 
-  submitFeedbackBtn.addEventListener('click', () => {
-      const feedbackText = feedbackTextArea.value.trim();
-      if (feedbackText === '') {
-          alert('Feedback cannot be empty.');
-          return;
-      }
-
-      if (isEditing) {
-          // Update feedback
-          const feedbackId = feedbackIdInput.value;
-          const index = feedbackData.findIndex(item => item.id === feedbackId);
-          if (index !== -1) {
-              feedbackData[index].text = feedbackText;
-              updateFeedbackList();
-          }
-      } else {
-          // Create new feedback
-          const newFeedback = {
-              id: generateId(),
-              text: feedbackText
-          };
-          feedbackData.push(newFeedback);
-          updateFeedbackList();
-      }
-
-      // Clear form and reset state
-      feedbackIdInput.value = '';
-      feedbackTextArea.value = '';
-      isEditing = false;
-      toggleFeedbackButtons('default');
-  });
-
-  deleteFeedbackBtn.addEventListener('click', () => {
-      const feedbackId = feedbackIdInput.value;
-      if (feedbackId) {
-          // Delete feedback
-          feedbackData = feedbackData.filter(item => item.id !== feedbackId);
-          updateFeedbackList();
-
-          // Clear form and reset state
-          feedbackIdInput.value = '';
-          feedbackTextArea.value = '';
-          isEditing = false;
-          toggleFeedbackButtons('default');
-      }
-  });
-
-  // Fetch data when page loads
-  fetchRoutes();
-  fetchSeatAvailability();
-  fetchBookingAlerts();
-  fetchUserFeedback();
-
-  
-  const navLinks = document.querySelectorAll('.nav-links a');
-  const sections = document.querySelectorAll('main > div');
-
-  navLinks.forEach(link => {
-      link.addEventListener('click', (event) => {
-          event.preventDefault();
-          const sectionId = link.getAttribute('data-section');
-
-          sections.forEach(section => {
-              section.classList.add('hidden');
-          });
-
-          document.getElementById(sectionId).classList.remove('hidden');
+  // Edit route
+  window.editRoute = (id) => {
+    fetch(`${API_URL}/routes/${id}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(route => {
+        document.getElementById('route-name').value = route.name;
+        document.getElementById('route-stops').value = route.stops.join(', ');
+        document.getElementById('route-schedule').value = route.schedule;
+        document.getElementById('create-route-form').setAttribute('data-edit-id', id);
+      })
+      .catch(error => {
+        console.error('Error fetching route for editing:', error);
       });
+  };
+
+  // Update route
+  window.updateRoute = (id) => {
+    const formData = new FormData(document.getElementById('create-route-form'));
+    const updatedRoute = {
+      name: formData.get('route-name'),
+      stops: formData.get('route-stops').split(',').map(stop => stop.trim()), 
+      schedule: formData.get('route-schedule')
+    };
+
+    fetch(`${API_URL}/routes/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(updatedRoute)
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(() => {
+      fetchAndDisplayRoutes(); 
+      document.getElementById('create-route-form').reset();
+      document.getElementById('create-route-form').removeAttribute('data-edit-id');
+    })
+    .catch(error => {
+      console.error('Error updating route:', error);
+    });
+  };
+
+  // Delete route
+  window.deleteRoute = (id) => {
+    fetch(`${API_URL}/routes/${id}`, {
+      method: 'DELETE'
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(() => {
+      fetchAndDisplayRoutes(); 
+    })
+    .catch(error => {
+      console.error('Error deleting route:', error);
+    });
+  };
+
+  // Attach event listener to the create route form
+  document.getElementById('create-route-form').addEventListener('submit', (event) => {
+    const editId = document.getElementById('create-route-form').getAttribute('data-edit-id');
+    if (editId) {
+      updateRoute(editId); 
+    } else {
+      createRoute(event);
+    }
   });
 
-  
-  document.getElementById('home-section').classList.remove('hidden');
+  // Initial fetch
+  fetchAndDisplayRoutes();
+
+  // Handle booking form submission
+  const handleBookingFormSubmit = (event) => {
+    event.preventDefault(); 
+
+    const formData = new FormData(event.target);
+    const booking = {
+      routeId: parseInt(formData.get('route')),
+      name: formData.get('name'),
+      email: formData.get('email')
+    };
+
+    fetch(`${API_URL}/bookingAlerts`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(booking)
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log('Booking successful:', data);
+      
+    })
+    .catch(error => {
+      console.error('Error booking:', error);
+    });
+  };
+
+  // Attach event listener to the booking form
+  document.getElementById('booking-form').addEventListener('submit', handleBookingFormSubmit);
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+  const API_URL = "http://localhost:3000";
+  
+  // Fetch and display feedback
+  const fetchAndDisplayFeedback = () => {
+    fetch(`${API_URL}/userFeedback`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(feedbackList => {
+        const feedbackItems = document.getElementById('feedback-items');
+        feedbackItems.innerHTML = '';
+
+        if (feedbackList.length === 0) {
+          feedbackItems.innerHTML = '<li>No feedback available</li>';
+          return;
+        }
+
+        feedbackList.forEach(feedback => {
+          const feedbackItem = document.createElement('li');
+          feedbackItem.innerHTML = `
+            <p>ID: ${feedback.id}</p>
+            <p>Feedback: ${feedback.comment}</p>
+            <button onclick="editFeedback(${feedback.id})">Edit</button>
+            <button onclick="deleteFeedback(${feedback.id})">Delete</button>
+          `;
+          feedbackItems.appendChild(feedbackItem);
+        });
+      })
+      .catch(error => {
+        console.error('Error fetching feedback:', error);
+      });
+  };
+
+  // Handle feedback creation
+  const createFeedback = () => {
+    const feedbackText = document.getElementById('feedback-text').value;
+
+    const feedback = {
+      comment: feedbackText
+    };
+
+    fetch(`${API_URL}/userFeedback`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(feedback)
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(() => {
+      fetchAndDisplayFeedback(); 
+      document.getElementById('feedback-form').reset();
+      document.getElementById('create-feedback-btn').classList.remove('hidden');
+      document.getElementById('edit-feedback-btn').classList.add('hidden');
+      document.getElementById('delete-feedback-btn').classList.add('hidden');
+    })
+    .catch(error => {
+      console.error('Error creating feedback:', error);
+    });
+  };
+
+  
+  window.editFeedback = (id) => {
+    fetch(`${API_URL}/userFeedback/${id}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(feedback => {
+        document.getElementById('feedback-text').value = feedback.comment;
+        document.getElementById('feedback-id').value = feedback.id;
+        document.getElementById('create-feedback-btn').classList.add('hidden');
+        document.getElementById('edit-feedback-btn').classList.remove('hidden');
+        document.getElementById('delete-feedback-btn').classList.remove('hidden');
+      })
+      .catch(error => {
+        console.error('Error fetching feedback for editing:', error);
+      });
+  };
+
+  
+  const updateFeedback = (id) => {
+    const feedbackText = document.getElementById('feedback-text').value;
+
+    const feedback = {
+      comment: feedbackText
+    };
+
+    fetch(`${API_URL}/userFeedback/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(feedback)
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(() => {
+      fetchAndDisplayFeedback(); 
+      document.getElementById('feedback-form').reset();
+      document.getElementById('create-feedback-btn').classList.remove('hidden');
+      document.getElementById('edit-feedback-btn').classList.add('hidden');
+      document.getElementById('delete-feedback-btn').classList.add('hidden');
+    })
+    .catch(error => {
+      console.error('Error updating feedback:', error);
+    });
+  };
+
+  
+  window.deleteFeedback = (id) => {
+    fetch(`${API_URL}/userFeedback/${id}`, {
+      method: 'DELETE'
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(() => {
+      fetchAndDisplayFeedback(); 
+    })
+    .catch(error => {
+      console.error('Error deleting feedback:', error);
+    });
+  };
+
+  // Attach event listeners to buttons
+  document.getElementById('create-feedback-btn').addEventListener('click', createFeedback);
+  document.getElementById('edit-feedback-btn').addEventListener('click', () => {
+    const feedbackId = document.getElementById('feedback-id').value;
+    updateFeedback(feedbackId);
+  });
+  document.getElementById('delete-feedback-btn').addEventListener('click', () => {
+    const feedbackId = document.getElementById('feedback-id').value;
+    deleteFeedback(feedbackId);
+  });
+
+  // Initial fetch
+  fetchAndDisplayFeedback();
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  const API_URL = "http://localhost:3000";
+  
+  // Fetch and display routes
+  const fetchAndDisplayRoutes = () => {
+    fetch(`${API_URL}/routes`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(routes => {
+        displayRoutes(routes);
+        populateRouteDropdown(routes);
+      })
+      .catch(error => {
+        console.error('Error fetching routes:', error);
+      });
+  };
+
+  // Display routes
+  const displayRoutes = (routes) => {
+    const routeInfoContainer = document.getElementById('route-info-container');
+    routeInfoContainer.innerHTML = '';
+
+    if (routes.length === 0) {
+      routeInfoContainer.innerHTML = '<p>No routes available</p>';
+      return;
+    }
+
+    routes.forEach(route => {
+      const routeElement = document.createElement('div');
+      routeElement.classList.add('route');
+      routeElement.innerHTML = `
+        <p>Route ID: ${route.id || 'N/A'}</p>
+        <p>Name: ${route.name || 'N/A'}</p>
+        <p>Stops: ${route.stops.join(', ') || 'N/A'}</p>
+        <p>Schedule: ${route.schedule || 'N/A'}</p>
+        <button onclick="editRoute(${route.id})">Edit</button>
+        <button onclick="updateRoute(${route.id})">Update</button>
+        <button onclick="deleteRoute(${route.id})">Delete</button>
+      `;
+      routeInfoContainer.appendChild(routeElement);
+    });
+  };
+
+  // Handle route creation
+  const createRoute = (event) => {
+    event.preventDefault();
+
+    const formData = new FormData(event.target);
+    const newRoute = {
+      name: formData.get('route-name'),
+      stops: formData.get('route-stops').split(',').map(stop => stop.trim()),
+      schedule: formData.get('route-schedule')
+    };
+
+    fetch(`${API_URL}/routes`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(newRoute)
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(() => {
+      fetchAndDisplayRoutes();
+      document.getElementById('create-route-form').reset();
+    })
+    .catch(error => {
+      console.error('Error creating route:', error);
+    });
+  };
+
+  // Edit route
+  window.editRoute = (id) => {
+    fetch(`${API_URL}/routes/${id}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(route => {
+        document.getElementById('route-name').value = route.name;
+        document.getElementById('route-stops').value = route.stops.join(', ');
+        document.getElementById('route-schedule').value = route.schedule;
+        document.getElementById('create-route-form').setAttribute('data-edit-id', id);
+      })
+      .catch(error => {
+        console.error('Error fetching route for editing:', error);
+      });
+  };
+
+  
+  window.updateRoute = (id) => {
+    const formData = new FormData(document.getElementById('create-route-form'));
+    const updatedRoute = {
+      name: formData.get('route-name'),
+      stops: formData.get('route-stops').split(',').map(stop => stop.trim()),
+      schedule: formData.get('route-schedule')
+    };
+
+    fetch(`${API_URL}/routes/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(updatedRoute)
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(() => {
+      fetchAndDisplayRoutes();
+      document.getElementById('create-route-form').reset();
+      document.getElementById('create-route-form').removeAttribute('data-edit-id');
+    })
+    .catch(error => {
+      console.error('Error updating route:', error);
+    });
+  };
+
+  // Delete route
+  window.deleteRoute = (id) => {
+    fetch(`${API_URL}/routes/${id}`, {
+      method: 'DELETE'
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(() => {
+      fetchAndDisplayRoutes();
+    })
+    .catch(error => {
+      console.error('Error deleting route:', error);
+    });
+  };
+
+  
+  const handleBookingFormSubmit = (event) => {
+    event.preventDefault();
+
+    const formData = new FormData(event.target);
+    const booking = {
+      routeId: parseInt(formData.get('route')),
+      name: formData.get('name'),
+      email: formData.get('email')
+    };
+
+    fetch(`${API_URL}/bookingAlerts`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(booking)
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log('Booking successful:', data);
+      document.getElementById('booking-form').reset();
+      document.getElementById('booking-confirmation').textContent = 'Your booking was successful!';
+      setTimeout(() => {
+        document.getElementById('booking-confirmation').textContent = ''; 
+      }, 5000);
+    })
+    .catch(error => {
+      console.error('Error booking:', error);
+      document.getElementById('booking-confirmation').textContent = 'There was an error with your booking.';
+      setTimeout(() => {
+        document.getElementById('booking-confirmation').textContent = ''; 
+      }, 5000);
+    });
+  };
+
+
+  document.getElementById('create-route-form').addEventListener('submit', (event) => {
+    const editId = document.getElementById('create-route-form').getAttribute('data-edit-id');
+    if (editId) {
+      updateRoute(editId);
+    } else {
+      createRoute(event);
+    }
+  });
+
+  document.getElementById('booking-form').addEventListener('submit', handleBookingFormSubmit);
+
+  // Initial fetch
+  fetchAndDisplayRoutes();
+});
 
